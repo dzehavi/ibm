@@ -1,0 +1,3 @@
+id=doron@zehavi.com&password=password1&balance=550
+id=amit@zehavi.com&password=password2&balance=12000
+id=yonatan@zehavi.com&password=password3&balance=1
