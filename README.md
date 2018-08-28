@@ -3,7 +3,7 @@ Pinpoint assignment for IBM interview.
 
 ## Installation instructions
 
-#### Prerequisite: Install Node.js from http://www.npmjs.com
+#### Prerequisite: Install Node.js from https://nodejs.org/en/
 
 1. Unzip the file into a test folder.
 
