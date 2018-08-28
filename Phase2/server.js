@@ -21,6 +21,8 @@ myInterface.on('line', function (line) {
 server = http.createServer(function(request, response) {
 	/** virtualizing the host. Checking the target host and routing to the right server **/
     switch(request.headers.host) {
+    
+    	/** first site: bank-example **/
         case 'bank-example.com': 
         	if (request.url == "/") {
         		/** show login form **/
@@ -58,36 +60,22 @@ server = http.createServer(function(request, response) {
 			}
 			else if (request.url == "/balance") {
 				/** check if token exists, then show balance **/
-				if (request.headers.cookie) {
-					var cookies = request.headers.cookie;
-					var token = -1;
-					var balance = -1;
-					cookies.split(',').forEach(function( cookie ) {
-        				var parts = cookie.split('=');
-        				if (parts[0]=='token') {
-        					token = parts[1];
-        				}
-        				else if (parts[0]=='balance') {
-        					balance = parts[1];
-        				}
-    				});
-    				if (token) {
-						response.end('Your balance is : ' + balance);
-					}
-					else {
+				handleBalanceRequest(request, (balance, err) => {
+					if (err) {
 						response.statusCode = 403;
 						response.end("You do not have rights to visit this page");				
 					}
-				}
-				else {
-					response.statusCode = 403;
-					response.end("You do not have rights to visit this page");				
-				}
+					else {
+						response.end('Your balance is : ' + balance);
+					}
+				});
 			}
         	break;
+        	
+        /** second site: login-tracking **/	
         case 'login-tracking.com': 
         	if (request.url == '/login_tracker.js') {
-        	/** return the contents of login_tracker.js **/
+        		/** return the contents of login_tracker.js **/
   				fs.readFile('login_tracker.js', function(err, data) {
     				response.writeHead(200, {'Content-Type': 'application/javascript'});
     				response.write(data);
@@ -141,3 +129,30 @@ function handleLogin(request, callback) {
     });
 }
 
+/** handle balance request **/
+function handleBalanceRequest(request, callback) {
+	if (request.headers.cookie) {
+		var cookies = request.headers.cookie;
+		var token;
+		var balance;
+		/** parse cookies **/
+		cookies.split(',').forEach(function( cookie ) {
+        	var parts = cookie.split('=');
+        	if (parts[0]=='token') {
+        		token = parts[1];
+        	}
+        	else if (parts[0]=='balance') {
+        		balance = parts[1];
+        	}
+    	});
+    	if (token) {
+			callback(balance, null);
+		}
+		else {
+			callback(null, 'Token cookie not found');
+		}
+	}
+	else {
+		callback(null, 'No cookies found');
+	}
+}
