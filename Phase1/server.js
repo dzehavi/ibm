@@ -13,7 +13,6 @@ var users = [];
 var user = {};
 myInterface.on('line', function (line) {
   user = querystring.parse(line);
-  console.log('Adding user : ' + user.id);
   users[user.id] = user;
 });
 
@@ -70,6 +69,10 @@ server = http.createServer(function(request, response) {
 					response.statusCode = 403;
 					response.end("You do not have rights to visit this page");				
 				}
+			}
+			else {
+				response.statusCode = 404;
+				response.end("Oops, page not found");				
 			}
         	break;
         default: 
