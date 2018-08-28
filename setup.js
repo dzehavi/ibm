@@ -8,10 +8,7 @@ var myInterface = readline.createInterface({
   input: fs.createReadStream('users.txt')
 });
 
-fs.unlink('./usersdb.txt', function (err) {
-  	if (err) throw err;
-  	console.log('File deleted!');
-});
+fs.unlink('./usersdb.txt', function (err) {});
   
 
 var user = {};
