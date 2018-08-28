@@ -5,17 +5,24 @@ Pinpoint assignment for IBM interview.
 
 #### Prerequisite: Install Node.js from https://nodejs.org/en/
 
+#### Install the bank-example, login-tracking servers:
+
 1. Unzip the file into a test folder.
-
 1. Open a shell at the test folder.
-
-1. To start the bank/login servers, type the following commands:
+1. Type the following command:
 ```
 node setup
-cd Phase3
+```
+### Run PhaseX
+1. Open a shell at the test folder.
+1. Type the following commands:
+```
+cd PhaseX
 sudo node server
 ```
-In order to run Phase3, open a shell at the test folder and type:
+#### Run Phase3 View Logins
+1. Open a shell at the test folder
+1. Type the following commands:
 ```
 cd Phase3
 node view_logins
