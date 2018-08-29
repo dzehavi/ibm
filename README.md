@@ -1,5 +1,5 @@
-# Pinpoint Assignment
-Pinpoint assignment for IBM interview.
+# Pinpoint Home Assignment
+Doron Zehavi, 30 August 2018
 
 ## Installation instructions
 
